@@ -3,6 +3,7 @@ package com.utilities;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.markuputils.ExtentColor;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
+import com.locators.DBLocator;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,6 +17,7 @@ import org.testng.asserts.SoftAssert;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -131,11 +133,6 @@ public class ReusableMethods {
                         "AssertionError: " + e.getMessage() +
                                 " | UI Value: " + actual + ", Expected Value: " + expected);
                 throw e;
-               /* try {
-                    throw e;
-                } catch (Throwable  ex) {
-                    System.out.println("Continue");
-                }*/
 
             }
         }
@@ -210,7 +207,65 @@ public class ReusableMethods {
         }
     }
 
+    public static void scrollDown(int scroll){
 
+        JavascriptExecutor js = (JavascriptExecutor) DriverFactory.getDriver();
+        js.executeScript("window.scrollBy(0,"+scroll+")");
+    }
 
+    public static void scrollDownByElement(){
+        WebElement element = DriverFactory.getDriver().findElement(DBLocator.europe);
+        JavascriptExecutor js = (JavascriptExecutor) DriverFactory.getDriver();
+        js.executeScript("arguments[0].scrollIntoView(true);", element);
+    }
+
+    public static void compareDbDataAndUiData(ArrayList<String> DBData, List<String> UIList) {
+        DBData.forEach(dbValue -> {
+            String uiValue = UIList.stream()
+                    .filter(dbValue::equals)
+                    .findFirst()
+                    .orElse(null);
+
+            if (uiValue != null) {
+                ExtentUtility.attatchPassMessageToReport("Both UI and DB values are matched - " +
+                        "Ui Value: " + uiValue + " DB value: " + dbValue);
+            } else {
+               /* ExtentUtility.attatchFailMessageToReport("Both UI and DB values are not matched for - " +
+                        "Ui Value: " + uiValue + " DB value: " + dbValue);
+                Assert.fail(errorMessage);*/
+
+                String errorMessage = "Both UI and DB values are not matched for - " +
+                        "DB Value: " + dbValue + ", UI Value: Not Found";
+                ExtentUtility.attatchFailMessageToReport(errorMessage);
+                Assert.fail(errorMessage); // Throws AssertionError
+
+            }
+        });
+    }
+
+    public static void compareDbDataAndUiDataTest(ArrayList<String> DBData, List<String> UIList) {
+        StringBuilder failureMessages = new StringBuilder();
+
+        DBData.forEach(dbValue -> {
+            String uiValue = UIList.stream()
+                    .filter(dbValue::equals)
+                    .findFirst()
+                    .orElse(null);
+
+            if (uiValue != null) {
+                ExtentUtility.attatchPassMessageToReport("Both UI and DB values are matched - " +
+                        "UI Value: " + uiValue + " DB Value: " + dbValue);
+            } else {
+                String errorMessage = "Mismatch found - DB Value: " + dbValue + ", UI Value: Not Found";
+                ExtentUtility.attatchFailMessageToReport(errorMessage);
+                failureMessages.append(errorMessage).append("\n"); // Collect failure messages
+            }
+        });
+
+        // Fail the test only once at the end
+        if (failureMessages.length() > 0) {
+            Assert.fail("Data mismatch found:\n" + failureMessages);
+        }
+    }
 
 }
