@@ -46,10 +46,10 @@ public class ReusableMethods {
         try {
             WebDriverWait wait = new WebDriverWait(DriverFactory.getDriver(), Duration.ofSeconds(5));
             WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(primaryLocator));
-            logger.info("✅ Found element using primary locator: {}", primaryLocator);
+            logger.info("[SUCCESS] ->  Found element using primary locator: {}", primaryLocator);
             return element;
         } catch (Exception e) {
-            logger.error("❌ Element not found using primary locator within timeout: {}", primaryLocator);
+            logger.error("[ERROR] ->  Element not found using primary locator within timeout: {}", primaryLocator);
             return null;
         }
     }
@@ -59,10 +59,10 @@ public class ReusableMethods {
         try {
             WebDriverWait wait = new WebDriverWait(DriverFactory.getDriver(), Duration.ofSeconds(5));
             element = wait.until(ExpectedConditions.visibilityOfElementLocated(primaryLocator));
-            logger.info("✅ Found element using primary locator: {}", primaryLocator);
+            logger.info("[SUCCESS] ->  Found element using primary locator: {}", primaryLocator);
             return element;
         } catch (Exception e) {
-            logger.warn("⚠️ Element not found using primary locator within timeout: {}", primaryLocator);
+            logger.warn("[WARN] ->  Element not found using primary locator within timeout: {}", primaryLocator);
             element = null;
         }
 
@@ -71,14 +71,14 @@ public class ReusableMethods {
             try {
                 element = DriverFactory.getDriver().findElement(secondaryLocators.get(i));
                 if (element.isDisplayed()) {
-                    logger.info("🔍 Found element using secondary locator: {}", secondaryLocators.get(i));
+                    logger.info("[SEARCH] ->  Found element using secondary locator: {}", secondaryLocators.get(i));
                     return element;
                 }
             } catch (NoSuchElementException | org.openqa.selenium.StaleElementReferenceException ignored) {
             }
         }
 
-        logger.error("❌ Element not found using primary or secondary locators.");
+        logger.error("[ERROR] ->  Element not found using primary or secondary locators.");
         return null;
     }
 
@@ -96,7 +96,7 @@ public class ReusableMethods {
             ExtentUtility.logger.get().log(Status.FAIL,
                     "AssertionError: " + e.getMessage());
             //ExtentUtility.attachScreenshotOnFailure("Click not working");
-            logger.error("❌ Click action failed: Unable to click on the element.");
+            logger.error("[ERROR] ->  Click action failed: Unable to click on the element.");
             throw e;
         }
     }
@@ -115,7 +115,7 @@ public class ReusableMethods {
             ExtentUtility.logger.get().log(Status.FAIL,
                     "SendKeys not working: " + e.getMessage());
            // ExtentUtility.attachScreenshotOnFailure("SendKeys not working");
-            logger.error("❌ sendKeys action failed: Unable to input text.");
+            logger.error("[ERROR] ->  sendKeys action failed: Unable to input text.");
 
         }
     }
@@ -128,7 +128,7 @@ public class ReusableMethods {
             try {
                 Assert.assertEquals(actual, expected, "Expected value and UI value are not matching");
             } catch (AssertionError e) {
-                logger.error("❌ Mismatch detected: UI value differs from the expected value.");
+                logger.error("[ERROR] ->  Mismatch detected: UI value differs from the expected value.");
                 ExtentUtility.logger.get().log(Status.FAIL,
                         "AssertionError: " + e.getMessage() +
                                 " | UI Value: " + actual + ", Expected Value: " + expected);
@@ -142,28 +142,17 @@ public class ReusableMethods {
         softAssert.assertAll(); // Fails test at the end
     }
 
-     /*   String screenshotPath = ScreenshotUtil.takeScreenshot();
-                ExtentUtility.attachScreenshotOnFailure("Both UI and Expected values are not matched for - " +
-                        "UI Value: " + actual + "______________" + "Expected Value: " + expected, screenshotPath);
-                ExtentUtility.logger.get().log(Status.FAIL,
-                        "AssertionError: " + e.getMessage() +
-                                " | UI Value: " + actual + ", Expected Value: " + expected);
-                System.out.println(e.getClass().getSimpleName());
-                String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
-                System.out.println("Exception in Method: " + methodName);
-                jiraOperation(screenshotPath,e.getClass().getSimpleName() +": Both UI and Expected values are not matched");*/
-
     public static void jiraOperation(String screenshotPath, String message) {
         String issueSummary = "Test Case Failed: " + message;
 
         if (message.contains("NoSuchElementException") || message.contains("StaleElementReferenceException") ) {
-            logger.info("⚠️ Possible Locator Issue");
+            logger.info("[WARN] ->  Possible Locator Issue");
         }
         else if (message.contains("500") || message.contains("404") || message.contains("TimeoutException") || message.contains("AssertionError")) {
             String issueId = JiraUtility.createJiraIssue(issueSummary, "Bug");
             JiraUtility.attachFileToJiraIssue(issueId, screenshotPath);
 
-            logger.error("❌ Jira Bug Logged: " + issueId);
+            logger.error("[ERROR] ->  Jira Bug Logged: " + issueId);
         }
 
 
@@ -184,7 +173,7 @@ public class ReusableMethods {
             ExtentUtility.logger.get().log(Status.FAIL, "Click failed: " + e.getMessage());
            // ExtentUtility.attachScreenshotOnFailure("Click not working",screenshotPath);
             //jiraOperation(screenshotPath,e.getMessage());
-            logger.error("❌ Click action failed: Unable to click on the element.");
+            logger.error("[ERROR] ->  Click action failed: Unable to click on the element.");
             throw e;
         }
     }
@@ -202,7 +191,7 @@ public class ReusableMethods {
             ExtentUtility.logger.get().log(Status.FAIL,
                     "SendKeys not working: " + e.getMessage());
             //ExtentUtility.attachScreenshotOnFailure("SendKeys not working");
-            logger.error("❌ sendKeys action failed: Unable to input text.");
+            logger.error("[ERROR] ->  sendKeys action failed: Unable to input text.");
 
         }
     }

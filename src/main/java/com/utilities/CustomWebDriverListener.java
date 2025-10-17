@@ -52,10 +52,10 @@ public class CustomWebDriverListener implements WebDriverListener, ITestListener
         for (int i = 1; i <= maxRetries; i++) {
             try {
                 element = driver.findElement(locator);
-                logger.info("✅ Element found after {} seconds: {}", i, locator);
+                logger.info("[SUCCESS] -> Element found after {} seconds: {}", i, locator);
                 return element;
             } catch (NoSuchElementException e) {
-                logger.info("⏳ Searching for element: {} (Attempt {}/{})", locator, i, maxRetries);
+                logger.info("[SEARCH] -> Searching for element: {} (Attempt {}/{})", locator, i, maxRetries);
                 try {
                     Thread.sleep(retryInterval);
                 } catch (InterruptedException ie) {
@@ -64,7 +64,7 @@ public class CustomWebDriverListener implements WebDriverListener, ITestListener
             }
         }
 
-        String errorMessage = "❌ Element not found after " + maxRetries + " attempts: " + locator;
+        String errorMessage = "[ERROR] -> Element not found after " + maxRetries + " attempts: " + locator;
         return null;
     }
 
@@ -74,13 +74,13 @@ public class CustomWebDriverListener implements WebDriverListener, ITestListener
             try {
                 List<WebElement> elements = driver.findElements(locator);
                 if (!elements.isEmpty()) {
-                    logger.info("✅ Found {} elements after {} seconds: {}", elements.size(), i, locator);
+                    logger.info("[SUCCESS] -> Found {} elements after {} seconds: {}", elements.size(), i, locator);
                     return elements;
                 } else {
-                    logger.info("⏳ No elements found yet: {} (Attempt {}/{})", locator, i, maxRetries);
+                    logger.info("[SEARCH] -> No elements found yet: {} (Attempt {}/{})", locator, i, maxRetries);
                 }
             } catch (Exception e) {
-                logger.warn("⚠️ Error occurred while searching for elements: {}", e.getMessage());
+                logger.warn("[WARN] -> Error occurred while searching for elements: {}", e.getMessage());
             }
 
             try {
@@ -89,7 +89,7 @@ public class CustomWebDriverListener implements WebDriverListener, ITestListener
                 Thread.currentThread().interrupt();
             }
         }
-        logger.error("❌ No elements found after {} seconds: {}", maxRetries, locator);
+        logger.error("[ERROR] -> No elements found after {} seconds: {}", maxRetries, locator);
         return List.of(); // Returning empty list to avoid NoSuchElementException
     }
 
@@ -109,15 +109,15 @@ public class CustomWebDriverListener implements WebDriverListener, ITestListener
         /*Throwable throwable = e.getTargetException();
 
         if (throwable instanceof NoSuchElementException) {
-            logger.error("❌ Element not found: {} in method {}", throwable.getMessage(), method.getName());
+            logger.error("[ERROR] -> Element not found: {} in method {}", throwable.getMessage(), method.getName());
         } else if (throwable instanceof TimeoutException) {
-            logger.error("⏳ Timeout while waiting for element in method {}: {}", method.getName(), throwable.getMessage());
+            logger.error("[SEARCH] -> Timeout while waiting for element in method {}: {}", method.getName(), throwable.getMessage());
         } else if (throwable instanceof StaleElementReferenceException) {
             logger.warn("♻️ Stale element reference in method {}: {}", method.getName(), throwable.getMessage());
         } else if (throwable instanceof ElementClickInterceptedException) {
             logger.warn("🚫 Element click intercepted in method {}: {}", method.getName(), throwable.getMessage());
         } else if (throwable instanceof WebDriverException) {
-            logger.error("⚠️ WebDriverException occurred in method {}: {}", method.getName(), throwable.getMessage());
+            logger.error("[WARN] -> WebDriverException occurred in method {}: {}", method.getName(), throwable.getMessage());
         } else {
             logger.error("❗ Unexpected error in method {}: ", method.getName(), throwable);
         }*/
@@ -136,7 +136,7 @@ public class CustomWebDriverListener implements WebDriverListener, ITestListener
     @Override
     public void beforeGet(WebDriver driver, String url) {
         pageLoading = true;
-        logger.info("🌐 Navigating to URL: {}", url);
+        logger.info("[NAVIGATE] -> Navigating to URL: {}", url);
 
         // Start a separate thread to monitor page load status
         new Thread(() -> {
@@ -151,15 +151,15 @@ public class CustomWebDriverListener implements WebDriverListener, ITestListener
                             boolean isComplete = "complete".equals(readyState);
 
                             if (!isComplete) {
-                                logger.info("⏳ Page is still loading...");
+                                logger.info("[SEARCH] -> Page is still loading...");
                             }
                             return isComplete;
                         });
 
-                logger.info("✅ Page has fully loaded.");
+                logger.info("[SUCCESS] -> Page has fully loaded.");
 
             } catch (Exception e) {
-                logger.error("⚠️ Page load wait interrupted: {}", e.getMessage());
+                logger.error("[WARN] -> Page load wait interrupted: {}", e.getMessage());
             } finally {
                 pageLoading = false;
             }
@@ -169,17 +169,17 @@ public class CustomWebDriverListener implements WebDriverListener, ITestListener
 
     @Override
     public void afterGet(WebDriver driver, String url) {
-        logger.info("✅ Page loaded successfully: {}", url);
+        logger.info("[SUCCESS] -> Page loaded successfully: {}", url);
     }
 
     @Override
     public void beforeGetCurrentUrl(WebDriver driver) {
-        logger.info("🔎 Before fetching current URL: " + driver.getCurrentUrl());
+        logger.info("[SEARCH] -> Before fetching current URL: " + driver.getCurrentUrl());
     }
 
     @Override
     public void afterGetCurrentUrl(WebDriver driver, String result) {
-        logger.info("✅ Fetched URL: " + result);
+        logger.info("[SUCCESS] -> Fetched URL: " + result);
     }
 
     @Override
@@ -196,27 +196,27 @@ public class CustomWebDriverListener implements WebDriverListener, ITestListener
     public void beforeFindElement(WebDriver driver, By locator) {
         retryFindElement(driver, locator);
 
-        logger.info("🔍 Searching for element with locator: {}", locator);
+        logger.info("[SEARCH] -> Searching for element with locator: {}", locator);
     }
 
     @Override
     public void afterFindElement(WebDriver driver, By locator, WebElement result) {
-        // logger.info("✅ Element found: {}", locator);
+        // logger.info("[SUCCESS] -> Element found: {}", locator);
         WebDriverListener.super.afterFindElement(driver, locator, result);
     }
 
     @Override
     public void beforeFindElements(WebDriver driver, By locator) {
-        logger.info("🔍 Searching for multiple elements with locator: {}", locator);
+        logger.info("[SEARCH] -> Searching for multiple elements with locator: {}", locator);
         retryFindElements(driver, locator);
     }
 
     @Override
     public void afterFindElements(WebDriver driver, By locator, List<WebElement> result) {
         if (result.isEmpty()) {
-            logger.warn("⚠️ No elements found using locator: {}", locator);
+            logger.warn("[WARN] -> No elements found using locator: {}", locator);
         } else {
-            logger.info("✅ Found {} elements using locator: {}", result.size(), locator);
+            logger.info("[SUCCESS] -> Found {} elements using locator: {}", result.size(), locator);
         }
     }
 
@@ -323,13 +323,13 @@ public class CustomWebDriverListener implements WebDriverListener, ITestListener
     @Override
     public void beforeClick(WebElement element) {
 
-        logger.info("🔍 Attempting to click element: {}", element);
+        logger.info("[SEARCH] -> Attempting to click element: {}", element);
     }
 
     @Override
     public void afterClick(WebElement element) {
 
-        logger.info("✅ Clicked element: {}", element);
+        logger.info("[SUCCESS] -> Clicked element: {}", element);
     }
 
     @Override
@@ -344,13 +344,13 @@ public class CustomWebDriverListener implements WebDriverListener, ITestListener
 
     @Override
     public void beforeSendKeys(WebElement element, CharSequence... keysToSend) {
-        logger.info("⌨️ Attempting to type '{}' into element: {}", String.join("", keysToSend), element);
+        logger.info("[INPUT] -> Attempting to type '{}' into element: {}", String.join("", keysToSend), element);
 
     }
 
     @Override
     public void afterSendKeys(WebElement element, CharSequence... keysToSend) {
-        logger.info("✅ Successfully typed '{}' into element: {}", String.join("", keysToSend), element);
+        logger.info("[SUCCESS] -> Successfully typed '{}' into element: {}", String.join("", keysToSend), element);
 
     }
 
@@ -867,13 +867,13 @@ public class CustomWebDriverListener implements WebDriverListener, ITestListener
     @Override
     public void onTestStart(ITestResult result) {
         testCaseName = result.getMethod().getMethodName();
-        logger.info("🚀 Test Started: {}", testCaseName);
+        logger.info("[EXECUTED] -> Test Started: {}", testCaseName);
         ExtentUtility.startTestInit(testCaseName);
     }
 
     @Override
     public void onTestSuccess(ITestResult result) {
-        logger.info("✅ Test Passed: {}", result.getMethod().getMethodName());
+        logger.info("[SUCCESS] -> Test Passed: {}", result.getMethod().getMethodName());
         passedTests++;
 
     }
@@ -882,7 +882,7 @@ public class CustomWebDriverListener implements WebDriverListener, ITestListener
     public void onTestFailure(ITestResult result) {
         failedTestCaseName = result.getMethod().getMethodName();
         String errorMessage = result.getThrowable() != null ? result.getThrowable().toString() : "Unknown error";
-        logger.error("❌ Test Failed: {} - Exception: {}", testCaseName, errorMessage);
+        logger.error("[ERROR] -> Test Failed: {} - Exception: {}", testCaseName, errorMessage);
         failedTests++;
         failedTestCasesList.add(failedTestCaseName);
         failedTestErrors.put(failedTestCaseName, errorMessage);
@@ -896,25 +896,25 @@ public class CustomWebDriverListener implements WebDriverListener, ITestListener
 
     @Override
     public void onTestSkipped(ITestResult result) {
-        logger.warn("⚠️ Test Skipped: {}", result.getMethod().getMethodName());
+        logger.warn("[WARN] -> Test Skipped: {}", result.getMethod().getMethodName());
         skippedTests++;
     }
 
     @Override
     public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
-        logger.warn("⚠️ Test Failed but within success percentage: {}", result.getMethod().getMethodName());
+        logger.warn("[WARN] -> Test Failed but within success percentage: {}", result.getMethod().getMethodName());
 
     }
 
     @Override
     public void onTestFailedWithTimeout(ITestResult result) {
-        logger.error("⏳ Test Failed due to Timeout: {}", result.getMethod().getMethodName());
+        logger.error("[SEARCH] -> Test Failed due to Timeout: {}", result.getMethod().getMethodName());
 
     }
 
     @Override
     public void onStart(ITestContext context) {
-        logger.info("🚀 Test Execution Started for Suite: {}", context.getSuite().getName());
+        logger.info("[EXECUTED] -> Test Execution Started for Suite: {}", context.getSuite().getName());
         totalTests = context.getAllTestMethods().length;
         startTime = System.currentTimeMillis();
 
@@ -926,7 +926,7 @@ public class CustomWebDriverListener implements WebDriverListener, ITestListener
 
     @Override
     public void onFinish(ITestContext context) {
-        logger.info("🏁 Test Execution Finished for Suite: {}", context.getSuite().getName());
+        logger.info("[EXECUTED] ->  Test Execution Finished for Suite: {}", context.getSuite().getName());
         System.out.println("Total: " + totalTests + ", Passed: " + passedTests + ", Failed: " + failedTests);
         endTime = System.currentTimeMillis();
 

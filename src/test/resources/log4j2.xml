@@ -4,6 +4,7 @@
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout>
                 <Pattern>%d{ISO8601} [%t] %-5level: %msg%n</Pattern>
+
             </PatternLayout>
         </Console>
     </Appenders>

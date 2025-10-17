@@ -24,7 +24,7 @@ public class JiraUtility {
     }
 
     public static String createJiraIssue(String summary, String issueType) {
-        String requestBody = "{ \"fields\": { \"project\": { \"key\": \"SCRUM\" }, " +
+          String requestBody = "{ \"fields\": { \"project\": { \"key\": \"SCRM\" }, " +
                 "\"summary\": \"" + summary + "\", " +
                 "\"issuetype\": { \"name\": \"" + issueType + "\" } } }";
 

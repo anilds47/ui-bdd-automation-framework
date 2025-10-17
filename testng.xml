@@ -9,7 +9,7 @@
 	<test name="Test" >
 		<classes>
 			<class name="com.testcases.Testcase1" />
-			<class name="com.testcases.Testcase2" />
+		 <class name="com.testcases.Testcase2" />
 
 		</classes>
 	</test> <!-- Test -->
