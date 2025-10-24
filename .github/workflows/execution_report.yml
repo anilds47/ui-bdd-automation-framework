@@ -22,10 +22,21 @@ jobs:
       - name: Run Maven Tests
         run: mvn clean test
 
-      # ✅ Read the generated HTML summary file
+      - name: Zip HTML Report Folder
+        run: |
+          cd HtmlReports/ZipReport
+          zip -r TestReport.zip TestReport
+          echo "Zipped report created at HtmlReports/ZipReport/TestReport.zip"
+
       - name: Read test-summary.html
         id: summary
+        shell: bash
         run: |
           echo "html_summary<<EOF" >> $GITHUB_OUTPUT
-          cat test-summary.html >> $GITHUB_OUTPUT
+          while IFS= read -r line; do
+            echo "$line" >> $GITHUB_OUTPUT
+          done < test-summary.html
           echo "EOF" >> $GITHUB_OUTPUT
+          
+      - name: Use summary
+        run: echo "${{ steps.summary.outputs.html_summary }}"
