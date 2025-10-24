@@ -1,0 +1,31 @@
+name: Run Tests & Send HTML Summary
+
+on:
+  push:
+    branches: [ testing_github_action ]
+  workflow_dispatch:
+
+jobs:
+  test_and_mail:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Run Maven Tests
+        run: mvn clean test
+
+      # ✅ Read the generated HTML summary file
+      - name: Read test-summary.html
+        id: summary
+        run: |
+          echo "html_summary<<EOF" >> $GITHUB_OUTPUT
+          cat test-summary.html >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT

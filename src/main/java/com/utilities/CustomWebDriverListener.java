@@ -10,9 +10,13 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.events.WebDriverListener;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.*;
@@ -924,17 +928,68 @@ public class CustomWebDriverListener implements WebDriverListener, ITestListener
 
     }
 
-    @Override
+    /*@Override
     public void onFinish(ITestContext context) {
         logger.info("[EXECUTED] ->  Test Execution Finished for Suite: {}", context.getSuite().getName());
         System.out.println("Total: " + totalTests + ", Passed: " + passedTests + ", Failed: " + failedTests);
         endTime = System.currentTimeMillis();
-
-        // Format end time
         endTimeFormatted = getFormattedTimestamp(endTime);
         logger.info("End Time: {}", endTimeFormatted);
 
+    }*/
+
+    @Override
+    public void onFinish(ITestContext context) {
+        logger.info("[EXECUTED] -> Test Execution Finished for Suite: {}", context.getSuite().getName());
+
+        // Capture end time
+        endTime = System.currentTimeMillis();
+        endTimeFormatted = getFormattedTimestamp(endTime);
+        logger.info("End Time: {}", endTimeFormatted);
+
+        // Log summary to console
+        System.out.println("=============================================");
+        System.out.println("            TEST EXECUTION SUMMARY           ");
+        System.out.println("=============================================");
+        System.out.println("Suite Name     : " + context.getSuite().getName());
+        System.out.println("Total Tests    : " + totalTests);
+        System.out.println("Passed Tests   : " + passedTests);
+        System.out.println("Failed Tests   : " + failedTests);
+        System.out.println("Skipped Tests  : " + skippedTests);
+        System.out.println("Start Time     : " + startTimeFormatted);
+        System.out.println("End Time       : " + endTimeFormatted);
+        System.out.println("=============================================");
+
+        // Save metrics to a text file for GitHub Actions
+        String textSummary = totalTests + "," + passedTests + "," + failedTests + "," + skippedTests + "," + startTimeFormatted + "," + endTimeFormatted;
+        try {
+            Files.write(Paths.get("test-summary.txt"), textSummary.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            logger.info("✅ Test summary saved to test-summary.txt");
+        } catch (IOException e) {
+            logger.error("Failed to write test-summary.txt", e);
+        }
+
+        // Optional: generate a simple HTML report
+        String htmlContent = "<html><body>" +
+                "<h3>Test Execution Summary</h3>" +
+                "<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; width: 60%;'>" +
+                "<tr style='background-color:#4CAF50;color:white;'><th>Metric</th><th>Value</th></tr>" +
+                "<tr><td>Total Tests</td><td>" + totalTests + "</td></tr>" +
+                "<tr><td>Passed</td><td style='color:green;'><b>" + passedTests + "</b></td></tr>" +
+                "<tr><td>Failed</td><td style='color:red;'><b>" + failedTests + "</b></td></tr>" +
+                "<tr><td>Skipped</td><td style='color:orange;'><b>" + skippedTests + "</b></td></tr>" +
+                "<tr><td>Start Time</td><td>" + startTimeFormatted + "</td></tr>" +
+                "<tr><td>End Time</td><td>" + endTimeFormatted + "</td></tr>" +
+                "</table></body></html>";
+
+        try {
+            Files.write(Paths.get("test-summary.html"), htmlContent.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            logger.info("Test summary HTML saved to test-summary.html");
+        } catch (IOException e) {
+            logger.error("Failed to write test-summary.html", e);
+        }
     }
+
 
     public static int getTotalTests() {
         return totalTests;

@@ -32,12 +32,13 @@ public class DriverFactory {
             if (browserName.equalsIgnoreCase("chrome")) {
                 ChromeOptions chromeOptions = new ChromeOptions();
                 chromeOptions.addArguments("--remote-allow-origins=*");
+                chromeOptions.addArguments("--headless");
+                chromeOptions.addArguments("--no-sandbox");
+                chromeOptions.addArguments("--disable-dev-shm-usage");
                 chromeOptions.setPageLoadStrategy(PageLoadStrategy.EAGER);
-               WebDriverManager.chromedriver().setup();
+                WebDriverManager.chromedriver().setup();
 
                 WebDriver baseDriver = new ChromeDriver(chromeOptions);
-
-                // Decorate WebDriver with the listener
                 WebDriver eventFiringDriver = new EventFiringDecorator<>(new CustomWebDriverListener()).decorate(baseDriver);
 
                 driver.set(eventFiringDriver);

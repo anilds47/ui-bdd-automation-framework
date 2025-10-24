@@ -38,7 +38,7 @@ public class TestBaseClass {
         FolderUtility.moveExtentReportForBackup(DirectoryPaths.generalPath,DirectoryPaths.reportFolderName,
                 DirectoryPaths.backUpFolder,DirectoryPaths.backUpReportName);
         ExtentUtility.extent.flush();
-        EmailConfiguration.emailSetup();
+        EmailConfiguration. emailSetup();
     }
 
 
