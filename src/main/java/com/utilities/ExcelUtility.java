@@ -8,7 +8,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,10 +17,10 @@ import java.util.Map;
 
 public class ExcelUtility {
 
-    public static Map<String, String> getSheetDataAsMap(String sheetName, String id) {
+    public static Map<String, String> getSheetDataAsMap(String sheetName, String id, String testDataExcelPath) {
         Map<String, String> rowData = new HashMap<>();
-        String excelFilePath=DirectoryPaths.testDataExcelPath;
-        try (FileInputStream fis = new FileInputStream(excelFilePath);
+
+        try (FileInputStream fis = new FileInputStream(testDataExcelPath);
              Workbook workbook = new XSSFWorkbook(fis)) {
 
             Sheet sheet = workbook.getSheet(sheetName);

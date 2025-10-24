@@ -5,15 +5,9 @@ import com.pages.DbPage;
 import com.utilities.*;
 import org.testng.annotations.Test;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import static com.utilities.ExcelUtility.getColumnValues;
-import static com.utilities.ExcelUtility.getColumnValuesAsLong;
 
 
 public class Testcase2 extends TestBaseClass {
@@ -68,7 +62,7 @@ public class Testcase2 extends TestBaseClass {
         ArrayList<String> totalCasessList=new ArrayList<>(totalCasesDataMap.values());
         ArrayList<String> DBList = dbPage.combineData(countryList, totalCasessList);
 
-        excelDataMap=  ExcelUtility.getSheetDataAsMap("TestingData","Test3");
+        excelDataMap=  ExcelUtility.getSheetDataAsMap("TestingData","Test3", DirectoryPaths.testDataExcelPath);
         System.out.println(excelDataMap);
         ReusableMethods.naviagteToUrl(excelDataMap.get("URL"));
         ReusableMethods.click(DBLocator.europe,"Click on Europe");
