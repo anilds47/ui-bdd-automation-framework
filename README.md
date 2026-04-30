@@ -19,7 +19,83 @@ A comprehensive UI automation testing framework built with Selenium WebDriver, C
 - Java 8 or higher
 - Maven 3.6+
 - Git
-- Docker (optional, for containerized execution)
+- Docker (required for MCP server functionality)
+
+## MCP Server Setup
+
+This framework integrates with Model Context Protocol (MCP) servers for enhanced automation capabilities, including GitHub operations and Selenium WebDriver management.
+
+### Docker Installation
+
+1. **Install Docker Desktop**:
+   - Download from [https://www.docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop)
+   - Follow the installation wizard for your operating system
+   - Start Docker Desktop after installation
+
+2. **Verify Docker Installation**:
+   ```bash
+   docker --version
+   docker run hello-world
+   ```
+
+### MCP Configuration
+
+The MCP servers are configured in `mcp.json` located at:
+- Windows: `%APPDATA%\github-copilot\intellij\mcp.json`
+- Linux/Mac: `~/.config/github-copilot/intellij/mcp.json`
+
+#### Current MCP Configuration:
+
+```json
+{
+    "servers": {
+        "github": {
+            "command": "docker",
+            "args": [
+                "run",
+                "-i",
+                "--rm",
+                "-e",
+                "GITHUB_PERSONAL_ACCESS_TOKEN",
+                "-e",
+                "GITHUB_API_HOST",
+                "ghcr.io/github/github-mcp-server"
+            ],
+            "env": {
+                "GITHUB_PERSONAL_ACCESS_TOKEN": "your_github_token_here",
+                "GITHUB_API_HOST": "api.github.com"
+            }
+        },
+        "selenium": {
+            "command": "npx",
+            "args": ["-y", "@angiejones/mcp-selenium@latest"]
+        }
+    }
+}
+```
+
+#### Setup Steps:
+
+1. **Generate GitHub Personal Access Token**:
+   - Go to GitHub Settings → Developer settings → Personal access tokens
+   - Create a new token with `repo`, `workflow`, and `read:org` permissions
+   - Copy the token and replace `your_github_token_here` in the MCP config
+
+2. **Verify MCP Server Connection**:
+   - Restart your IDE (IntelliJ IDEA with GitHub Copilot)
+   - The MCP servers should automatically start when needed
+
+#### MCP Server Features:
+
+- **GitHub Server**: Enables repository operations, pull request management, issue tracking
+- **Selenium Server**: Provides advanced browser automation capabilities and diagnostics
+
+### Troubleshooting MCP Setup
+
+- **Docker not running**: Ensure Docker Desktop is started
+- **Token expired**: Regenerate GitHub token and update `mcp.json`
+- **Permission denied**: Verify token has required scopes
+- **Server connection failed**: Check Docker network connectivity
 
 ## Installation
 
@@ -205,5 +281,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 For support and questions:
 - Create an issue in the GitHub repository
 - Check the troubleshooting section
-- Review the code comments for implementation details</content>
-<parameter name="filePath">C:\Users\anild\OneDrive\Documents\ui_automation\README.md
+- Review the code comments for implementation details
