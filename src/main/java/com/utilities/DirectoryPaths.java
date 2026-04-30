@@ -18,4 +18,6 @@ public class DirectoryPaths {
     public static String backUpReportName = "ExtentReport_" + Calendar.getInstance().getTime().toString().replace(" ", "_").replace(":", "-").trim() + ".html";
     public static String extentReportPath=executionReportFolder +File.separator + "report.html";
 
+
+
 }

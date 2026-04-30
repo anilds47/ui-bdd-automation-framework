@@ -13,6 +13,8 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.support.events.EventFiringDecorator;
 
+import java.time.Duration;
+
 public class DriverFactory {
 
     private static ThreadLocal<WebDriver> driver = new ThreadLocal<WebDriver>();
@@ -32,16 +34,25 @@ public class DriverFactory {
             if (browserName.equalsIgnoreCase("chrome")) {
                 ChromeOptions chromeOptions = new ChromeOptions();
                 chromeOptions.addArguments("--remote-allow-origins=*");
-                chromeOptions.addArguments("--headless");
                 chromeOptions.addArguments("--no-sandbox");
                 chromeOptions.addArguments("--disable-dev-shm-usage");
                 chromeOptions.setPageLoadStrategy(PageLoadStrategy.EAGER);
+
                 WebDriverManager.chromedriver().setup();
 
+                // Step 1: Create base driver
                 WebDriver baseDriver = new ChromeDriver(chromeOptions);
-                WebDriver eventFiringDriver = new EventFiringDecorator<>(new CustomWebDriverListener()).decorate(baseDriver);
 
-                driver.set(eventFiringDriver);
+                // Step 2: Attach listener (VERY IMPORTANT)
+                CustomWebDriverListener listener = new CustomWebDriverListener();
+                WebDriver decoratedDriver = new EventFiringDecorator(listener).decorate(baseDriver);
+
+                // Step 3: Set ThreadLocal
+                driver.set(decoratedDriver);
+
+                // Step 4: Basic setup
+                getDriver().manage().window().maximize();
+                //getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 
                 //driver.set(new ChromeDriver(chromeOptions));
             } else if (browserName.equalsIgnoreCase("FireFox")) {

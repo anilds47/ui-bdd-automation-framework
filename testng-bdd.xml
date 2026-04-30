@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="BDD Test Suite" verbose="1">
+    <listeners>
+        <listener class-name="com.utilities.CustomWebDriverListener"/>
+    </listeners>
+
+    <test name="BDD Tests">
+        <classes>
+            <class name="com.runners.CucumberTestRunner"/>
+        </classes>
+    </test>
+</suite>

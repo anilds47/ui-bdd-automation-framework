@@ -16,6 +16,9 @@ public class JiraUtility {
     private static final String AUTH_TOKEN =ConfigReader.getValue("AuthKey");
     private static final String SCRUM_KEY=ConfigReader.getValue("ProjectKey");
 
+    private static final String ISSUE_ENDPOINT = ConfigReader.getValue("Issue_Endpoint");
+
+
     private static Map<String, String> getHeaders() {
         Map<String, String> headers = new HashMap<>();
         headers.put("Authorization", AUTH_TOKEN);
@@ -24,7 +27,7 @@ public class JiraUtility {
     }
 
     public static String createJiraIssue(String summary, String issueType) {
-          String requestBody = "{ \"fields\": { \"project\": { \"key\": \"SCRM\" }, " +
+          String requestBody = "{ \"fields\": { \"project\": { \"key\": \""+SCRUM_KEY+"\" }, " +
                 "\"summary\": \"" + summary + "\", " +
                 "\"issuetype\": { \"name\": \"" + issueType + "\" } } }";
 
@@ -34,7 +37,7 @@ public class JiraUtility {
                 .headers(getHeaders())  // Use the headers HashMap
                 .body(requestBody)
                 .when()
-                .post("rest/api/2/issue")
+                .post(ISSUE_ENDPOINT)
                 .then()
                 .assertThat().statusCode(201)
                 .extract().response();
@@ -53,7 +56,7 @@ public class JiraUtility {
                 .pathParam("key", issueId)
                 .multiPart("file", new File(filePath))
                 .when()
-                .post("/rest/api/2/issue/{key}/attachments")
+                .post(ISSUE_ENDPOINT+"/{key}/attachments")
                 .then()
                 .assertThat().statusCode(200);
 
