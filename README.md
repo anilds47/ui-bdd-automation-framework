@@ -13,6 +13,7 @@ A comprehensive UI automation testing framework built with Selenium WebDriver, C
 - **Custom WebDriver Listener**: Enhanced logging and error handling
 - **API Testing**: REST API testing capabilities
 - **Database Comparison**: UI and database data comparison tests
+- **Mobile Testing**: Appium support for Android and iOS testing
 
 ## Prerequisites
 
@@ -233,6 +234,159 @@ The `CustomWebDriverListener` provides:
 - Automatic screenshot capture on failures
 - Jira ticket creation for failed tests
 - Test execution summary generation
+
+## Mobile Testing with Appium
+
+This framework now supports mobile application testing using Appium for both Android and iOS platforms.
+
+### Mobile Testing Prerequisites
+
+- **Node.js** (for Appium server)
+- **Appium Server**: Install globally via npm
+  ```bash
+  npm install -g appium
+  npm install -g appium-doctor
+  ```
+- **Android SDK** (for Android testing)
+- **Xcode** (for iOS testing on macOS)
+- **Mobile Device/Emulator**: Connected Android device or iOS simulator
+
+### Setting up Appium
+
+1. **Install Appium Server**:
+   ```bash
+   npm install -g appium
+   appium --version
+   ```
+
+2. **Install UiAutomator2 Driver** (for Android):
+   ```bash
+   appium driver install uiautomator2
+   ```
+
+3. **Install XCUITest Driver** (for iOS):
+   ```bash
+   appium driver install xcuitest
+   ```
+
+4. **Start Appium Server**:
+   ```bash
+   appium --address 127.0.0.1 --port 4723
+   ```
+
+### Mobile Device Setup
+
+#### Android Setup:
+1. **Enable Developer Options** on your Android device
+2. **Enable USB Debugging**
+3. **Connect device** via USB or start emulator
+4. **Verify device connection**:
+   ```bash
+   adb devices
+   ```
+
+#### iOS Setup (macOS only):
+1. **Install Xcode** from App Store
+2. **Start iOS Simulator** or connect physical device
+3. **Verify device**:
+   ```bash
+   xcrun simctl list devices
+   ```
+
+### Mobile Test Configuration
+
+Update `config.properties` with mobile settings:
+
+```properties
+# Mobile Configuration
+MobilePlatform=Android
+MobileDeviceUDID=emulator-5554
+AppiumServerUrl=http://127.0.0.1:4723/wd/hub
+MobileDeviceName=AndroidDevice
+MobileAppPackage=com.example.app
+MobileAppActivity=.MainActivity
+MobileAppPath=/path/to/your/app.apk
+MobileBrowser=Chrome
+MobileAutomationName=UiAutomator2
+MobileNoReset=true
+MobileNewCommandTimeout=300
+```
+
+### Running Mobile Tests
+
+Execute mobile tests using tags:
+```bash
+mvn test -Dcucumber.options="--tags @mobile"
+```
+
+Or run specific mobile scenarios:
+```bash
+mvn test -Dcucumber.options="--tags @mobile and @smoke"
+```
+
+### Mobile Step Definitions
+
+Available mobile-specific steps in `MobileSteps.java`:
+
+- Launch mobile app/browser
+- Tap on elements
+- Enter text in fields
+- Scroll and swipe gestures (up, down, left, right)
+- Long press actions with custom duration
+- Element verification (visibility, text content)
+- Navigation (back, refresh, URL navigation)
+- Keyboard operations (hide, show, verify state)
+- Custom wait operations
+
+### MobileUtils Class
+
+The `MobileUtils` class in `com.utilities` package provides reusable methods for mobile operations:
+
+```java
+// Launch mobile app using configuration from config.properties
+MobileUtils mobileUtils = MobileUtils.launchMobileAppFromConfig("Android", "emulator-5554");
+
+// Or launch with custom parameters
+MobileUtils mobileUtils = MobileUtils.launchMobileApp("Android", "MyDevice", "emulator-5554", "http://127.0.0.1:4723/wd/hub");
+
+// Launch mobile browser
+MobileUtils mobileUtils = MobileUtils.launchMobileBrowserFromConfig("Android", "emulator-5554");
+
+// Basic interactions
+mobileUtils.tapElement("id", "button_id");
+mobileUtils.enterText("Hello World", "xpath", "//input[@name='search']");
+
+// Gestures
+mobileUtils.scrollDown();
+mobileUtils.scrollUp();
+mobileUtils.swipeLeft();
+mobileUtils.swipeRight();
+
+// Long press with custom duration
+mobileUtils.longPressElement("accessibilityId", "menu_item", 3000);
+
+// Element verification
+boolean isVisible = mobileUtils.isElementVisible("id", "element_id");
+String text = mobileUtils.getElementText("xpath", "//div[@class='title']");
+
+// Keyboard operations
+mobileUtils.hideKeyboard();
+boolean keyboardShown = mobileUtils.isKeyboardShown();
+
+// Custom waits
+WebElement element = mobileUtils.waitForElement("css", ".loading", 10);
+```
+
+### Mobile Test Features
+
+The framework supports:
+
+- **Native App Testing**: Test mobile applications directly
+- **Mobile Web Testing**: Test websites on mobile browsers
+- **Gesture Support**: Swipe, scroll, long press, tap
+- **Cross-Platform**: Android and iOS support
+- **Device Farm Ready**: Compatible with cloud device farms
+- **Reusable Utilities**: MobileUtils class for common operations
 
 ## Reporting
 

@@ -1,12 +1,8 @@
 package com.utilities;
 
-import com.aventstack.extentreports.Status;
-import org.testng.annotations.*;
+import io.appium.java_client.AppiumDriver;
 
 import java.io.IOException;
-import java.util.HashMap;
-
-import static com.utilities.ReusableMethods.jiraOperation;
 
 public class TestBaseClass {
 
@@ -18,9 +14,15 @@ public class TestBaseClass {
     }
 
 
-    public void beforeClass()
+    public void beforeClass(String platform, String browser)
     {
-        DriverFactory.setDriver(ConfigReader.getValue("Env"),ConfigReader.getValue("Browser"));
+        if(platform.equalsIgnoreCase("Web") && browser.equalsIgnoreCase(ConfigReader.getValue("Browser"))) {
+            DriverFactory.setDriver(ConfigReader.getValue("Env"), ConfigReader.getValue("Browser"));
+        } else if(platform.equals("android") || platform.equals("iOS")) {
+            DriverFactory.setMobileDriver(platform);
+        } else {
+            throw new IllegalArgumentException("Unsupported platform or browser: " + platform + ", " + browser);
+        }
 
     }
 
@@ -30,9 +32,19 @@ public class TestBaseClass {
     }
 
 
-    public void afterClass(){
-
-        DriverFactory.getDriver().quit();
+    public void afterClass(String platform, String browser){
+        try {
+            if(platform.equalsIgnoreCase("Web") && browser.equalsIgnoreCase(ConfigReader.getValue("Browser"))) {
+                DriverFactory.quitDriver();
+            } else if(platform.equalsIgnoreCase("android") || platform.equalsIgnoreCase("iOS")) {
+                DriverFactory.quitMobileDriver();
+            } else {
+                throw new IllegalArgumentException("Unsupported platform or browser: " + platform + ", " + browser);
+            }
+        } catch (Exception e) {
+            System.out.println("Error in afterClass: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 

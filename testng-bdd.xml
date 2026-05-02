@@ -5,6 +5,8 @@
     </listeners>
 
     <test name="BDD Tests">
+        <parameter name="platform" value="web"/>
+        <parameter name="browser" value="chrome"/>
         <classes>
             <class name="com.runners.CucumberTestRunner"/>
         </classes>

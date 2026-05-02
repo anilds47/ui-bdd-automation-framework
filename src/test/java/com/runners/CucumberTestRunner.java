@@ -9,7 +9,7 @@ import org.testng.annotations.*;
 import java.io.IOException;
 
 @CucumberOptions(
-    features = {"src/test/resources/features"},  // Run only UI-related features
+    features = {"src/test/resources/features/MobileDemo.feature"},  // Run only UI-related features
     glue = {"com.stepdefinitions"},  // Package for step definitions
     plugin = {"pretty", "html:target/cucumber-reports.html"},  // Reporting
     monochrome = true
@@ -24,8 +24,10 @@ public class CucumberTestRunner extends AbstractTestNGCucumberTests {
     }
 
     @BeforeClass(alwaysRun = true)
-    public void beforeClass() {
-        base.beforeClass();
+    @Parameters({"platform", "browser"})
+    public void beforeClass(String platform,  @Optional("chrome") String browser) {
+
+        base.beforeClass(platform, browser);
     }
 
    /* @BeforeMethod(alwaysRun = true)
@@ -33,16 +35,18 @@ public class CucumberTestRunner extends AbstractTestNGCucumberTests {
         base.beforeMethod();
     }*/
 
-   /* @AfterClass
-    public void afterClass() {
-        base.afterClass();
-    }*/
+    @AfterClass
+    @Parameters({"platform", "browser"})
+    public void afterClass(String platform,  @Optional("chrome") String browser) {
+        base.afterClass(platform,browser);
+    }
 
     @AfterSuite
-    public void afterSuite() throws IOException {
+    @Parameters({"platform", "browser"})
+    public void afterSuite(String platform,  @Optional("chrome") String browser) throws IOException {
         CustomWebDriverListener.setEndTime(System.currentTimeMillis());
         CustomWebDriverListener.printAndPersistSummary("Cucumber Suite");
         base.aftersuite();
-        base.afterClass();
+       // base.afterClass(platform,browser);
     }
 }
