@@ -146,7 +146,7 @@ public class DriverFactory {
             // Step 3: Set ThreadLocal
            // driver.set(decoratedDriver);
             //mobileDriver.set((AppiumDriver) decoratedDriver);
-           // mobileDriver.set(androidDriver);        // AppiumDriver (real)
+            mobileDriver.set(androidDriver);        // AppiumDriver (real)
             driver.set(decoratedDriver);
             // For web testing, we can still use the CustomWebDriverListener
          /*   if (options.getCapability("browserName") != null) {
